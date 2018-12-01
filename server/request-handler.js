@@ -1,3 +1,5 @@
+
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -112,8 +114,8 @@ var requestHandler = function(request, response) {
   }
 };
 
-
-
-
-module.exports = requestHandler;
+module.exports.requestHandler = requestHandler;
+// exports = {
+//   requestHandler: requestHandler  
+// };
 
