@@ -75,31 +75,19 @@ var requestHandler = function(request, response) {
   var url = request.url;
   
   if (url === '/classes/messages' && request.method === 'GET') {
-    console.log('url is hit!!!' + url);
+    statusCode = 200;
     headers['Content-Type'] = 'application/json';
-    // headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-
-    response.end(JSON.stringify(data)); //content is being sent back incorrectly, still a string
-  }
-
-  if (url === '/classes/messages' && request.method === 'POST') {
+    response.end(JSON.stringify(data)); 
+  } else if (url === '/classes/messages' && request.method === 'POST') {
     statusCode = 201;
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-
-
     request.on('data', (chunk)=> {
-      data.results.push(JSON.parse(chunk));
-      // data.push(chunk);
-      console.log(data.results);
+      data.results.push(JSON.parse(chunk));      
     }).on('end', () => {
-      // data.results = Buffer.concat(data).toString();
-      // response.end(data);
       response.end(JSON.stringify(data));
     });
-
-    
   } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);
