@@ -16,7 +16,6 @@ this file and include it in basic-server.js so that it actually works.
 // console.log('data: ', data);
 // var data = {"results":[{"objectId":"LJUJ69iokB","username":"sheIsGone","roomname":"lobby","text":"what happens when thanos snaps his finger","createdAt":"2018-11-30T07:29:30.562Z","updatedAt":"2018-11-30T07:29:30.562Z"}]};
 
-var dataStore;
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -34,7 +33,9 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-var requestHandler = function(request, response) {
+var data = {"results" : []};
+
+var requestHandler = function(request, response) {  
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -74,17 +75,30 @@ var requestHandler = function(request, response) {
   if (url === '/classes/messages' && request.method === 'GET') {
     console.log('url is hit!!!' + url);
     headers['Content-Type'] = 'application/json';
+    // headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
 
-    response.end(JSON.stringify(data));
+    response.end(JSON.stringify(data)); //content is being sent back incorrectly, still a string
   } else if (url === '/classes/messages' && request.method === 'POST') {
     statusCode = 201;
-    headers['Content-Type'] = 'text/plain';
-    // dataStore
+    // headers['Content-Type'] = 'text/plain';
+    headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-    response.end();
-  } else {
 
+
+    request.on('data', (chunk)=> {
+      data.results.push(JSON.parse(chunk));
+      // data.push(chunk);
+      console.log(data.results);
+    }).on('end', () => {
+      // data.results = Buffer.concat(data).toString();
+      // response.end(data);
+      response.end(JSON.stringify(data));
+    })
+
+    
+  } else {
+    response.statusCode = 404;
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
   // response.end() will be the body of the response - i.e. what shows
@@ -92,7 +106,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-    response.end('Hello World');
+    response.end('404');
   }
 };
 
