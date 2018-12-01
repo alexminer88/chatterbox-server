@@ -33,7 +33,7 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-var data = {"results" : []};
+var data = {results: []};
 
 var requestHandler = function(request, response) {  
   // Request and Response come from node's http module.
@@ -79,9 +79,10 @@ var requestHandler = function(request, response) {
     response.writeHead(statusCode, headers);
 
     response.end(JSON.stringify(data)); //content is being sent back incorrectly, still a string
-  } else if (url === '/classes/messages' && request.method === 'POST') {
+  }
+
+  if (url === '/classes/messages' && request.method === 'POST') {
     statusCode = 201;
-    // headers['Content-Type'] = 'text/plain';
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
 
@@ -94,18 +95,19 @@ var requestHandler = function(request, response) {
       // data.results = Buffer.concat(data).toString();
       // response.end(data);
       response.end(JSON.stringify(data));
-    })
+    });
 
     
   } else {
-    response.statusCode = 404;
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    // Make sure to always call response.end() - Node may not send
+    // anything back to the client until you do. The string you pass to
+    // response.end() will be the body of the response - i.e. what shows
+    // up in the browser.
+    //
+    // Calling .end "flushes" the response's internal buffer, forcing
+    // node to actually send all the data over to the client.
     response.end('404');
   }
 };
