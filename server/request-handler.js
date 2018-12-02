@@ -11,7 +11,9 @@
 // client from this domain by setting up static file serving.
 
 
-var data = {results: []};
+// var data = {results: []};
+var objectIdCounter = 1;
+var messages = [];
 
 var requestHandler = function(request, response) {  
   
@@ -35,31 +37,50 @@ var requestHandler = function(request, response) {
   if (url === '/classes/messages') {
 
     if (request.method === 'GET') {
+ 
       statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(data)); 
+      response.end(JSON.stringify({results: messages}));
+      
+      // statusCode = 200;
+      // response.writeHead(statusCode, headers);
+      // response.end(JSON.stringify(data)); 
     }
 
     if (request.method === 'POST') {
 
-      statusCode = 201;
-
-      response.writeHead(statusCode, headers);
-
-      request.on('data', (chunk)=> {
-        var parsedData = JSON.parse(chunk);
-        parsedData.createdAt = new Date();
-        data.results.push(parsedData);      
-      }).on('end', () => {
-        response.end(JSON.stringify(data));
+      var data = '';
+      request.on('data', function(chunk) {
+        data += chunk;
       });
+      request.on('end', function() {         
+        JSON.parse(data).objectId = ++objectIdCounter;
+        messages.push(JSON.parse(data));    
+        statusCode = 201;
+        response.writeHead(statusCode, headers);
+        response.end(JSON.stringify({objectId: JSON.parse(data).objectId}));
+      });
+
+      // statusCode = 201;
+      // response.writeHead(statusCode, headers);
+      // request.on('data', (chunk)=> {
+      //   // var parsedData = JSON.parse(chunk);
+      //   // parsedData.createdAt = new Date();
+      //   // data.results.push(parsedData);   
+      //   data.results.push(chunk);   
+      // }).on('end', () => {
+      //   // response.end(JSON.stringify(data));
+      //   data.results = Buffer.concat(data.results).toString();  
+      //   console.log('post results', data.results);
+      //   response.end();
+      // });
     }
 
     if (request.method === 'OPTIONS') {
-      console.log('request OPTIONS: ', request);
+      // console.log('request OPTIONS: ', headers);
       response.writeHead(200, headers);
-      response.end(); 
-    } 
+      response.end(JSON.stringify(null)); 
+    }
 
   } else {
     statusCode = 404;

@@ -73,5 +73,12 @@ describe('server', function() {
     });
   });
 
+  xit('Should accept OPTIONS requests to /classes/messages', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+
 
 });
