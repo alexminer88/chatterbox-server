@@ -33,6 +33,16 @@ describe('server', function() {
     });
   });
 
+  it('should send an object containing a number', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      var parsedBody = JSON.parse(body);
+      expect(parsedBody).to.be.an('object');
+      expect(parsedBody.results).to.be.an('array');
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+
   it('should accept POST requests to /classes/messages', function(done) {
     var requestParams = {method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/messages',
@@ -73,12 +83,7 @@ describe('server', function() {
     });
   });
 
-  xit('Should accept OPTIONS requests to /classes/messages', function(done) {
-    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-      expect(response.statusCode).to.equal(200);
-      done();
-    });
-  });
+
 
 
 });
